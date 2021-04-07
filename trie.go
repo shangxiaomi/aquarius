@@ -4,22 +4,6 @@ import (
 	"fmt"
 	"strings"
 )
-
-/*
-在路由本身只有字符串的情况下，不会发生任何冲突。只有当路由中含有wildcard（类似 :id）或者catchAll的情况下才可能冲突。这一点在前面已经提到了。
-
-子节点的冲突处理很简单，分几种情况：
-
-1.在插入wildcard节点时，父节点的children数组非空且wildChild被设置为false。例如：GET /user/getAll和GET /user/:id/getAddr，或者GET /user/*aaa和GET /user/:id。
-2.在插入wildcard节点时，父节点的children数组非空且wildChild被设置为true，但该父节点的wildcard子节点要插入的wildcard名字不一样。例如：GET /user/:id/info和GET /user/:name/info。
-3.在插入catchAll节点时，父节点的children非空。例如：GET /src/abc和GET /src/*filename，或者GET /src/:id和GET /src/*filename。
-4.在插入static节点时，父节点的wildChild字段被设置为true。
-5.在插入static节点时，父节点的children非空，且子节点nType为catchAll。
-6.某个路由重复插入「已解决」
-
-只要发生冲突，都会在初始化的时候panic。例如，在插入我们臆想的路由GET /marketplace_listing/plans/ohyes时，出现第4种冲突情况：它的父节点marketplace_listing/plans/的wildChild字段为true。
-*/
-
 // node methods is not concurrent safe
 type node struct {
 	pattern  string  // 存放此节点对应的模式串
@@ -38,10 +22,6 @@ func (root *node) String() string {
 }
 
 /*
-有一种情况
-/hello/:name/
-/hello/world/shp
-
 insert add route path , if parts include part of contains "*", the part is the last element
 */
 func (root *node) insert(pattern string, parts []string, height int) {
