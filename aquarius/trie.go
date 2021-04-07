@@ -91,12 +91,9 @@ func checkPattern(pattern string, part string, root *node, height int) {
 			panic(fmt.Errorf("在插入catchAll节点时，父节点的children必须为非空，父节点[%s],要插入的路径[%s]，冲突的部分[%s]", root, pattern, part))
 		}
 	} else { // 要插入的是个静态路径
-		if root.isWild {
-			panic(fmt.Errorf("插入static路径时，父节点不能为模糊匹配，父节点[%s]，要插入的路径[%s]，冲突的部分[%s]，第[%d]层", root, pattern, part, height))
-		}
 		for _, child := range root.children {
-			if len(child.part) > 0 && child.part[0] == '*' {
-				panic(fmt.Errorf("插入static路径时，父节点不能有matchAll的孩子节点，父节点[%s]，孩子节点[%s]，要插入的路径[%s]，冲突的部分[%s]，第[%d]层", root, child, pattern, part, height))
+			if len(child.part) > 0 && (child.part[0] == '*' || child.part[0] == ':') {
+				panic(fmt.Errorf("插入static路径时，父节点不能有通配符的孩子节点，父节点[%s]，孩子节点[%s]，要插入的路径[%s]，冲突的部分[%s]，第[%d]层", root, child, pattern, part, height))
 			}
 		}
 	}
@@ -123,11 +120,6 @@ func (root *node) search(parts []string, height int) *node {
 			return res
 		}
 	}
-	return nil
-}
-
-func (root *node) search2(parts []string, height int) *node {
-	//TODO 实现一个比较蠢得dfs方法
 	return nil
 }
 
