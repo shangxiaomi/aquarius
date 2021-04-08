@@ -13,9 +13,6 @@ type node struct {
 
 }
 
-func newNode() *node {
-	return &node{}
-}
 
 func (root *node) String() string {
 	return fmt.Sprintf("(part[%s], pattern[%s], ChildLen[%d] ,isWild[%t])", root.part, root.pattern, len(root.children), root.isWild)
@@ -112,7 +109,6 @@ func matchChildNode(root *node, part string) *node {
 		if child == nil {
 			// 所有的子节点不应给为空
 			panic("child should not be nil")
-			continue
 		}
 		if child.part == part || child.isWild {
 			return child
@@ -128,7 +124,6 @@ func matchChildren(root *node, part string) []*node {
 		if child == nil {
 			// 所有的子节点不应给为空
 			panic("child should not be nil")
-			continue
 		}
 		if child.part == part || child.isWild {
 			nodes = append(nodes, child)

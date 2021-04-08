@@ -32,7 +32,7 @@ func (r *router) addRoute(method, pattern string, handler HandlerFunc) {
 	r.handlers[key] = handler
 	root, ok := r.tries[method]
 	if !ok {
-		root = newNode()
+		root = new(node)
 		r.tries[method] = root
 	}
 	parts := parsePattern(pattern)

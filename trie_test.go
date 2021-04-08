@@ -6,7 +6,7 @@ import (
 )
 
 func TestTrie(t *testing.T) {
-	n := newNode()
+	n := new(node)
 	addPath(n, "/hello/world")
 	addPath(n, "/hello/shp")
 	addPath(n, "/nishishui")
@@ -123,7 +123,7 @@ func runTrieTestCase(t *testing.T, testCases []*trieTestCase) {
 					t.Log("[panic]", err)
 				}
 			}()
-			n := newNode()
+			n := new(node)
 			for _, p := range kase.paths {
 				addPath(n, p)
 			}

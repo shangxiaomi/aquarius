@@ -28,21 +28,27 @@ import (
 )
 
 func main() {
-	r := aquarius.New()
-	r.GET("/", func(c *aquarius.Context) {
-		c.HTML(http.StatusOK, "<h1>Hello aquarius</h1>")
-	})
-	r.GET("/hello", func(c *aquarius.Context) {
-		// expect /hello?name=aquariusktutu
+	e := aquarius.New()
+	r := e.Group("/shp")
+	{
+		r.GET("/", func(c *aquarius.Context) {
+			c.HTML(http.StatusOK, "<h1>Hello aquarius</h1>")
+		})
+		r.GET("/hello", func(c *aquarius.Context) {
+			// expect /hello?name=aquariusktutu
+			c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
+		})
+
+		r.POST("/login", func(c *aquarius.Context) {
+			c.JSON(http.StatusOK, aquarius.H{
+				"username": c.PostForm("username"),
+				"password": c.PostForm("password"),
+			})
+		})
+	}
+	e.GET("/hello", func(c *aquarius.Context) {
 		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
 	})
 
-	r.POST("/login", func(c *aquarius.Context) {
-		c.JSON(http.StatusOK, aquarius.H{
-			"username": c.PostForm("username"),
-			"password": c.PostForm("password"),
-		})
-	})
-
-	r.Run(":9999")
+	e.Run(":9999")
 }
