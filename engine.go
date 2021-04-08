@@ -31,12 +31,17 @@ func New() *Engine {
 	return engine
 }
 
+func Default() *Engine {
+	engine := New()
+	engine.Use(Logger(), Recovery())
+	return engine
+}
+
 func (group *RouterGroup) Group(prefix string) *RouterGroup {
 	newGroup := &RouterGroup{
-		parent:      group,
-		prefix:      group.prefix + prefix, // TODO 对于前缀的格式需要进行校验
-		engine:      group.engine,
-		middlewares: group.middlewares,
+		parent: group,
+		prefix: group.prefix + prefix, // TODO 对于前缀的格式需要进行校验
+		engine: group.engine,
 	}
 	group.engine.groups = append(group.engine.groups, newGroup)
 	return newGroup

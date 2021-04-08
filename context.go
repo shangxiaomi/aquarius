@@ -91,3 +91,8 @@ func (c *Context) HTML(code int, html string) {
 	c.Status(code)
 	c.Writer.Write([]byte(html))
 }
+
+func (c *Context) Fail(code int, s string) {
+	c.Status(code)
+	c.Writer.Write([]byte(s))
+}

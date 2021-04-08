@@ -24,12 +24,14 @@ $ curl "http://localhost:9999/xxx"
 
 import (
 	"aquarius"
-	"fmt"
 	"net/http"
 )
 
 func main() {
-	e := aquarius.New()
+	e := aquarius.Default()
+	e.GET("/panic", func(c *aquarius.Context) {
+		panic("test panic")
+	})
 	r := e.Group("/shp")
 	{
 		r.GET("/", func(c *aquarius.Context) {
@@ -46,27 +48,27 @@ func main() {
 			})
 		})
 	}
-	e.GET("/hello", func(c *aquarius.Context) {
-		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
-	})
-	group2 := e.Group("/middleware")
-	group2.Use(func(c *aquarius.Context) {
-		fmt.Println("/middleware begin")
-		c.Next()
-		fmt.Println("/middleware end")
-	})
-	group2.GET("/", func(c *aquarius.Context) {
-		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
-	})
-	group1 := e.Group("/middleware/shp")
-	group1.Use(func(c *aquarius.Context) {
-		fmt.Println("/middleware/shp begin")
-		c.Next()
-		fmt.Println("/middleware/shp end")
-	})
-	group1.GET("/", func(c *aquarius.Context) {
-		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
-	})
+	//e.GET("/hello", func(c *aquarius.Context) {
+	//	c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
+	//})
+	//group2 := e.Group("/middleware")
+	//group2.Use(func(c *aquarius.Context) {
+	//	fmt.Println("/middleware begin")
+	//	c.Next()
+	//	fmt.Println("/middleware end")
+	//})
+	//group2.GET("/", func(c *aquarius.Context) {
+	//	c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
+	//})
+	//group1 := e.Group("/middleware/shp")
+	//group1.Use(func(c *aquarius.Context) {
+	//	fmt.Println("/middleware/shp begin")
+	//	c.Next()
+	//	fmt.Println("/middleware/shp end")
+	//})
+	//group1.GET("/", func(c *aquarius.Context) {
+	//	c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
+	//})
 
 	e.Run(":9999")
 }

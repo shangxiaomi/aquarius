@@ -70,6 +70,10 @@ func (r *router) handle(c *Context) {
 			})
 			log.Println(fmt.Sprintf("the handler should not be nil, because have mathched tire node, [method: %s, path: %s, trie.pattern: %s]", c.Method, c.Path, root.pattern))
 		}
+	} else {
+		c.handlers = append(c.handlers, func(c *Context) {
+			c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+		})
 	}
 	c.Next()
 }
