@@ -102,9 +102,6 @@ func (root *node) search(parts []string, height int) *node {
 
 // 只匹配到第一个符合条件的孩子节点
 func matchChildNode(root *node, part string) *node {
-	//if len(root.children) == 0 { 切片会自动初始化，可以直接进行遍历，不用判断是否为空的切片
-	//	return nil
-	//}
 	for _, child := range root.children {
 		if child == nil {
 			// 所有的子节点不应给为空
@@ -133,23 +130,6 @@ func matchChildren(root *node, part string) []*node {
 }
 
 func travel(root *node) {
-	que := make([]*node, 0)
-	que = append(que, root)
-	tot := 1
-	for len(que) > 0 {
-		tail := que[0]
-		que = que[1:]
-		que = append(que, tail.children...)
-		fmt.Printf("%s ", tail)
-		tot--
-		if tot == 0 {
-			tot += len(que)
-			fmt.Println(tot)
-		}
-	}
-}
-
-func travel2(root *node) {
 	que := make([]*node, 0)
 	tail := 0
 	que = append(que, root)

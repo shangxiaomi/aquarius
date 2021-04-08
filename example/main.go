@@ -24,6 +24,7 @@ $ curl "http://localhost:9999/xxx"
 
 import (
 	"aquarius"
+	"fmt"
 	"net/http"
 )
 
@@ -35,7 +36,6 @@ func main() {
 			c.HTML(http.StatusOK, "<h1>Hello aquarius</h1>")
 		})
 		r.GET("/hello", func(c *aquarius.Context) {
-			// expect /hello?name=aquariusktutu
 			c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
 		})
 
@@ -47,6 +47,24 @@ func main() {
 		})
 	}
 	e.GET("/hello", func(c *aquarius.Context) {
+		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
+	})
+	group2 := e.Group("/middleware")
+	group2.Use(func(c *aquarius.Context) {
+		fmt.Println("/middleware begin")
+		c.Next()
+		fmt.Println("/middleware end")
+	})
+	group2.GET("/", func(c *aquarius.Context) {
+		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
+	})
+	group1 := e.Group("/middleware/shp")
+	group1.Use(func(c *aquarius.Context) {
+		fmt.Println("/middleware/shp begin")
+		c.Next()
+		fmt.Println("/middleware/shp end")
+	})
+	group1.GET("/", func(c *aquarius.Context) {
 		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
 	})
 

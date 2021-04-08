@@ -12,7 +12,7 @@ func TestTrie(t *testing.T) {
 	addPath(n, "/nishishui")
 	addPath(n, "/nishishui/cxh")
 	addPath(n, "/hello/:name")
-	travel2(n)
+	travel(n)
 }
 
 func TestTriePanic(t *testing.T) {

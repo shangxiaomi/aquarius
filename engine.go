@@ -3,6 +3,7 @@ package aquarius
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 type HandlerFunc func(*Context)
@@ -41,6 +42,11 @@ func (group *RouterGroup) Group(prefix string) *RouterGroup {
 	return newGroup
 }
 
+// Use is defined to add middleware to the group
+func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
+	group.middlewares = append(group.middlewares, middlewares...)
+}
+
 func (group *RouterGroup) addRoute(method, pattern string, handler HandlerFunc) {
 	path := group.prefix + pattern
 	log.Printf("Route %4s - %s", method, path)
@@ -64,7 +70,25 @@ func (e *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, e)
 }
 
+/*
+TODO 确认这里的middleware能否按照正确逻辑进行组装
+比如先添加 /hello/world/的中间件
+再添加 /hello的中间件
+遍历时会先讲 /hello/world的中间件添加到切片中
+但是按照实际逻辑应该先添加/hello中的逻辑
+不过按照使用逻辑，不应该添加这么添加
+
+gin 的逻辑是，如果分别添加/hello/world和/hello两个group，那么这两个的middleware是相互独立的
+*/
 func (e *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	c := newContext(w, req)
+	path := req.URL.Path
+	middlewares := make([]HandlerFunc, 0)
+	for _, g := range e.groups {
+		if strings.HasPrefix(path, g.prefix) {
+			middlewares = append(middlewares, g.middlewares...)
+		}
+	}
+	c.handlers = middlewares
 	e.router.handle(c)
 }

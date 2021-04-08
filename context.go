@@ -19,6 +19,9 @@ type Context struct {
 	// response info
 	StatusCode int
 	StatusMsg  string
+	// about middleware
+	handlers []HandlerFunc
+	index    int
 }
 
 func newContext(resp http.ResponseWriter, req *http.Request) *Context {
@@ -27,6 +30,16 @@ func newContext(resp http.ResponseWriter, req *http.Request) *Context {
 		Req:    req,
 		Path:   req.URL.Path,
 		Method: req.Method,
+		index:  -1,
+	}
+}
+
+func (c *Context) Next() {
+	// TODO 为什么从 -1 开始? 应该是因为Next是我们需要主动去调用的，需要主动+1进入下一个handler，从-1开始就可以不用处理边界条件
+	c.index++
+	s := len(c.handlers)
+	for ; c.index < s; c.index++ {
+		c.handlers[c.index](c)
 	}
 }
 

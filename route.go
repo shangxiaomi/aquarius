@@ -19,14 +19,6 @@ func newRouter() *router {
 	}
 }
 
-/*
-路由可能的情况
-/
-/hello/
-world
-/hello/:name/
-/hello/world/*msg
-*/
 func (r *router) addRoute(method, pattern string, handler HandlerFunc) {
 	key := method + "-" + pattern
 	r.handlers[key] = handler
@@ -71,18 +63,20 @@ func (r *router) handle(c *Context) {
 	if root != nil {
 		key := c.Method + "-" + root.pattern
 		if handler, ok := r.handlers[key]; ok {
-			handler(c)
-			return
+			c.handlers = append(c.handlers, handler)
+		} else {
+			c.handlers = append(c.handlers, func(c *Context) {
+				c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+			})
+			log.Println(fmt.Sprintf("the handler should not be nil, because have mathched tire node, [method: %s, path: %s, trie.pattern: %s]", c.Method, c.Path, root.pattern))
 		}
-		log.Println(fmt.Sprintf("the handler should not be nil, because there is the mathched tire node, [method: %s, path: %s, trie.pattern: %s]", c.Method, c.Path, root.pattern))
 	}
-	c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+	c.Next()
 }
 
 // Only one * is allowed
 func parsePattern(pattern string) []string {
 	vs := strings.Split(pattern, "/")
-
 	parts := make([]string, 0)
 	for _, item := range vs {
 		if item != "" {
